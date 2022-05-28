@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Unicorns">
+  <meta name="author" content="Unicorns">
+  <title>Unicorns</title>
+
+  <!-- GOOGLE FONT -->
+  <!--    <link rel="dns-prefetch" href="https://fonts.gstatic.com/">-->
+  <!--    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="anonymous">-->
+  <!--    <link rel="preload" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" as="fetch" crossorigin="anonymous">-->
+
+  <!-- BASE CSS -->
+  <link href="/bootstrap-5.1.3/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <!--  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">-->
+  <link rel="stylesheet" href="/color-admin/plugins/ladda/ladda-themeless.min.css"/>
+  <link href="/static/css/mobile.css" rel="stylesheet">
+  <link href="/color-admin/css/default/app.min.css" rel="stylesheet">
+  <link href="/static/css/style.css" rel="stylesheet">
+
+  <script src="/static/js/jquery-3.6.0.min.js"></script>
+  <script src="/bootstrap-5.1.3/js/bootstrap.bundle.js"></script>
+  <script src="/color-admin/js/app.min.js"></script>
+  <script src="/color-admin/plugins/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="/color-admin/js/business.js"></script>
+  <script src="/color-admin/plugins/ladda/spin.min.js"></script>
+  <script src="/color-admin/plugins/ladda/ladda.min.js"></script>
+  <script src="/color-admin/plugins/ladda/ladda.jquery.min.js"></script>
+  <script src="/static/js/web3.min.js"></script>
+  <script src="/static/js/getWeb3.js"></script>
+  <script src="/static/js/constants.js"></script>
+  <script>
+      let call_backs = [];
+      const TAB_IDS = ['home', 'benefit', 'contact', 'mine'];
+      let web3, address, contract, BN, contract_usdt, max_amount, min_allowance, registered;
+      let inviter = '0x0000000000000000000000000000000000000000';
+      <% if @inviter_address && !@inviter_address.strip.blank? %>
+      inviter = '<%= @inviter_address.strip %>';
+      <% end %>
+
+      function change_main_tab(tab) {
+          for (let i = 0; i < TAB_IDS.length; i++) {
+              let tab_id = TAB_IDS[i];
+              if (tab === tab_id) {
+                  $('#' + tab_id).show();
+                  $('#tab_' + tab_id).removeClass('text-gray-lighter').addClass('text-blue font-weight-bold');
+                  eval('load_' + tab_id + '_data()');
+                  localStorage.setItem('mobile:home:tab', tab_id);
+              } else {
+                  $('#' + tab_id).hide();
+                  $('#tab_' + tab_id).removeClass('text-blue font-weight-bold').addClass('text-gray-lighter');
+              }
+          }
+      }
+
+      function register() {
+          contract.methods.register(inviter).send({from: address})
+              .on('receipt', (receipt) => {
+                  registered = true;
+                  if (call_backs.length > 0) {
+                      for (let i = 0; i < call_backs.length; i++) {
+                          call_backs[i]();
+                      }
+                  }
+              })
+              .on('error', (err) => {
+                  swal('Error', err.message, 'error');
+              });
+      }
+
+      function sync_approve() {
+          Business.post(
+              '/user/users/new_approve',
+              {
+                  address: address,
+                  authenticity_token: '<%= form_authenticity_token %>'
+              },
+              function () {
+              }, function (msg) {
+                  console.log(msg);
+              }
+          );
+      }
+
+      function check_registration() {
+          contract.methods.userExists(address).call().then(exists => {
+              if (!exists) {
+                  contract_usdt.methods.allowance(address, Constants.contract.address).call().then(rs => {
+                      let allow = new BN(rs);
+                      if (allow.lt(min_allowance)) {
+                          // Approve
+                          contract_usdt.methods.approve(Constants.contract.address, max_amount).send({from: address})
+                              .on('receipt', (receipt) => {
+                                  console.log(receipt);
+                                  sync_approve();
+                                  register();
+                              })
+                              .on('error', (err) => {
+                                  console.log(err);
+                                  swal('Error', err.message, 'error');
+                              });
+                      } else {
+                          register();
+                      }
+                  });
+              } else {
+                  registered = true;
+                  if (call_backs.length > 0) {
+                      for (let i = 0; i < call_backs.length; i++) {
+                          call_backs[i]();
+                      }
+                  }
+              }
+          });
+      }
+
+      $(function () {
+          getWeb3().then(res => {
+              web3 = res;
+              BN = web3.utils.BN;
+              max_amount = new BN(2).pow(new BN(256)).sub(new BN(1));
+              min_allowance = new BN(10).pow(new BN(18)).mul(new BN(100));
+              contract = new web3.eth.Contract(Constants.contract.abi, Constants.contract.address);
+              contract_usdt = new web3.eth.Contract(Constants.contract_usdt.abi, Constants.contract_usdt.address);
+              web3.eth.getAccounts(function (err, result) {
+                  address = result[0];
+                  $('#my_address').text('0x...' + address.substr(34));
+                  // Check registration
+                  check_registration();
+              });
+          }).catch(function (err) {
+              console.log(err);
+              swal('error', err.message, 'error');
+          });
+      });
+  </script>
+</head>
+<body class="light-theme">
+<main>
+  <%= yield %>
+</main>
+<div class="footer-container">
+  <div class="footer-slot" style="height: 60px;"></div>
+  <footer class="navbar-fixed-bottom" style="padding: 0">
+    <div class="display-flex p-t-5 p-b-5">
+      <div id="tab_home" onclick="change_main_tab('home')" class="calc-width text-center text-blue font-weight-bold">
+        <div><i class="fas fa-fw fa-home" style="font-size: 15pt;"></i></div>
+        <div class="m-b-xs"><span style="font-size: 14px;">Home</span></div>
+      </div>
+      <div id="tab_benefit" onclick="change_main_tab('benefit')" class="calc-width text-center text-gray-lighter">
+        <div><i class="fas fa-fw fa-coins" style="font-size: 15pt;"></i></div>
+        <div class="m-b-xs"><span style="font-size: 14px;">Benefits</span></div>
+      </div>
+      <div id="tab_contact" onclick="change_main_tab('contact')" class="calc-width text-center text-gray-lighter">
+        <div><i class="fas fa-fw fa-link" style="font-size: 15pt;"></i></div>
+        <div class="m-b-xs"><span style="font-size: 14px;">Contact</span></div>
+      </div>
+      <div id="tab_mine" onclick="change_main_tab('mine')" class="calc-width text-center text-gray-lighter">
+        <div><i class="fas fa-fw fa-user" style="font-size: 15pt;"></i></div>
+        <div class="m-b-xs"><span style="font-size: 14px;">Mine</span></div>
+      </div>
+    </div>
+  </footer>
+</div>
+</body>
+
+<script src="/static/js/common_scripts.min.js"></script>
+<script src="/static/js/common_func.js"></script>

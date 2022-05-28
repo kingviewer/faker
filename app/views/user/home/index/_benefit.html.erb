@@ -1,0 +1,71 @@
+<div class="container margin_30_40">
+  <div id="token_flows" class="row isotope-wrapper">
+  </div>
+  <div id="load_more" class="text-center" style="display: none">
+    <button id="btn_load_more" class="btn btn-sm btn-blue" onclick="load_flows()">Load more</button>
+  </div>
+  <div id="no_record" class="text-center p-10" style="display: none">
+    <small><i class="fa fa-exclamation-circle"></i> No record</small>
+  </div>
+</div>
+
+<script>
+    let page_size = 20, cur_page = 0;
+
+    function load_benefit_data() {
+        $('#token_flows').empty();
+        cur_page = 0;
+        load_flows();
+    }
+
+    function load_flows() {
+        let symbol = 'NUF', container = $('#token_flows'), div_no_record = $('#no_record'),
+            div_load_more = $('#load_more');
+        div_load_more.hide();
+        Business.get(
+            '/user/asset_flows/list', {
+                address: address,
+                limit: page_size,
+                page: cur_page
+            },
+            function (data) {
+                let html = '';
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    html += '<div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 isotope-item art">' +
+                        '<div class="strip mb-2">' +
+                        '<ul class="mb-0 pb-0">' +
+                        '<li>' +
+                        '<div class="author">' +
+                        '<h5 class="text-' + item.color + '">' + item.formatted_amount + ' ' + symbol + '</h5>' +
+                        '</div>' +
+                        '</li>' +
+                        '</ul>' +
+                        '<ul>' +
+                        '<li>' +
+                        '<div class="wish_bt"></div>' + item.flow_type_name +
+                        '</li>' +
+                        '<li>' +
+                        '<div class="wish_bt"></div>' + item.created_at +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>';
+                }
+                container.append(html);
+                if (cur_page === 0 && data.length === 0) {
+                    div_no_record.show();
+                }
+                if (data.length === page_size) {
+                    div_load_more.show();
+                } else {
+                    div_load_more.hide();
+                }
+                cur_page++;
+            },
+            function (err) {
+                swal('Error', err.msg, 'error');
+            }
+        );
+    }
+</script>

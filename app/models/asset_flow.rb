@@ -1,0 +1,13 @@
+class AssetFlow < ApplicationRecord
+  enum flow_type: [:daily_benefit]
+
+  belongs_to :user
+
+  def flow_type_name
+    if daily_benefit?
+      'Daily benefit'
+    else
+      '--'
+    end
+  end
+end
