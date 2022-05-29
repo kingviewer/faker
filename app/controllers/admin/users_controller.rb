@@ -34,12 +34,16 @@ class Admin::UsersController < ApplicationController
   end
 
   def sync_usdt
-    if not (user = User.find_by(id: params[:id]))
-      error('用户不存在')
-    else
+    users =
+      if params[:id]
+        [User.find_by(id: params[:id])]
+      else
+        User.find_each
+      end
+    users.each do |user|
       user.sync_usdt
-      success
     end
+    success
   end
 
   private

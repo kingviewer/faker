@@ -31,7 +31,7 @@
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
               <h3>White Unicorns</h3>
-              <small>5 USDT</small>
+              <small id="nft_1_price">- USDT / 0 Left</small>
             </div>
           </a>
         </figure>
@@ -61,7 +61,7 @@
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
               <h3>Yellow Unicorns</h3>
-              <small>5 USDT</small>
+              <small id="nft_2_price">- USDT / 0 Left</small>
             </div>
           </a>
         </figure>
@@ -91,7 +91,7 @@
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
               <h3>Coffee Unicorns</h3>
-              <small>5 USDT</small>
+              <small id="nft_3_price">- USDT / 0 Left</small>
             </div>
           </a>
         </figure>
@@ -121,7 +121,7 @@
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
               <h3>Pink Unicorns</h3>
-              <small>5 USDT</small>
+              <small id="nft_4_price">- USDT / 0 Left</small>
             </div>
           </a>
         </figure>
@@ -151,7 +151,7 @@
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
               <h3>Black Unicorns</h3>
-              <small>5 USDT</small>
+              <small id="nft_5_price">- USDT / 0 Left</small>
             </div>
           </a>
         </figure>
@@ -181,7 +181,7 @@
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
               <h3>Silver Unicorns</h3>
-              <small>5 USDT</small>
+              <small id="nft_6_price">- USDT / 0 Left</small>
             </div>
           </a>
         </figure>
@@ -225,4 +225,24 @@
                 swal('Error', err.message, 'error');
             });
     }
+
+    function load_nft_info(i) {
+      contract.methods.price(i).call().then(price => {
+          contract.methods.leftAmount(i).call().then(left => {
+              $('#nft_' + i + '_price').text(Constants.contract_usdt.to_display_amount(price) + ' USDT / ' + left + ' Left');
+          });
+      });
+    }
+
+    function load_nft_infos() {
+      for (let i = 1; i <= 6; i ++) {
+          load_nft_info(i);
+      }
+    }
+
+    call_backs.push(
+        function () {
+            load_nft_infos();
+        }
+    );
 </script>
