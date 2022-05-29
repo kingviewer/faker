@@ -34,5 +34,7 @@ module Faker
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    config.hosts << "www.unicorns.name" << "unicorns.name"
   end
 end
