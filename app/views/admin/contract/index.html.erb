@@ -1,0 +1,427 @@
+<div class="row">
+  <div class="col-8">
+    <h4 id="usdt_balance">合约USDT余额：-</h4>
+  </div>
+  <div class="col-4">
+    <button id="btn_withdraw_usdt" class="btn btn-primary ladda-button" data-style="zoom-in" onclick="withdraw_usdt()">提取</button>
+  </div>
+</div>
+
+<div class="row m-t-20">
+  <div class="col-8">
+    <h4 id="contract_owner">合约所有者：-</h4>
+  </div>
+  <div class="col-4">
+    <button id="btn_transfer_owner" class="btn btn-primary ladda-button" data-style="zoom-in" onclick="transfer_ownership()">转移所有权</button>
+  </div>
+</div>
+
+<div class="row m-t-20">
+  <div class="col-8">
+    <h4 id="base_uri">NFT基础URI：-</h4>
+  </div>
+  <div class="col-4">
+    <button id="btn_set_base_uri" class="btn btn-primary ladda-button" data-style="zoom-in" onclick="set_base_uri()">设置基础URI</button>
+  </div>
+</div>
+
+<div class="row m-t-20">
+  <div class="col-8">
+    <h4 id="nft_prices">NFT价格(USDT)：-</h4>
+  </div>
+  <div class="col-4">
+    <button id="btn_set_price" class="btn btn-primary ladda-button" data-style="zoom-in" onclick="set_price()">设置NFT价格</button>
+  </div>
+</div>
+
+<div class="row m-t-20">
+  <div class="col-8">
+    <h4 id="nft_left_amounts">NFT剩余数量：-</h4>
+  </div>
+  <div class="col-4">
+    <button id="btn_set_left_amount" class="btn btn-primary ladda-button" data-style="zoom-in" onclick="set_left_amount()">设置NFT剩余数量</button>
+  </div>
+</div>
+
+<div class="row m-t-20">
+  <div class="col-8">
+    <h4 id="market_open">市场状态：-</h4>
+  </div>
+  <div class="col-4">
+    <button id="btn_set_market_open" class="btn btn-primary ladda-button" data-style="zoom-in" onclick="open_market()">开启市场</button>
+    <button id="btn_set_market_close" class="btn btn-primary ladda-button" data-style="zoom-in" onclick="close_market()">关闭市场</button>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_withdraw_usdt" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title">提现USDT</h4>
+      </div>
+      <form id="form_withdraw_usdt">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>目标地址 <span class="text-danger">*</span></label>
+            <input name="receipt" type="text" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>数量 <span class="text-danger">*</span></label>
+            <input name="amount" type="number" step="0.000001" min="0.000001" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="ladda-button btn btn-success" data-style="zoom-in">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_transfer_ownership" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title">转移合约所有权</h4>
+      </div>
+      <form id="form_transfer_ownership">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>接受所有权地址 <span class="text-danger">*</span></label>
+            <input name="new_owner" type="text" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="ladda-button btn btn-success" data-style="zoom-in">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_set_base_uri" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title">设置NFT基础地址</h4>
+      </div>
+      <form id="form_set_base_uri">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>新的基础地址 <span class="text-danger">*</span></label>
+            <input name="base_uri" type="text" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="ladda-button btn btn-success" data-style="zoom-in">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_set_price" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title">设置NFT价格(UDST)</h4>
+      </div>
+      <form id="form_set_price">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>NFT名称 <span class="text-danger">*</span></label>
+            <select name="level" class="form-control">
+              <option value="1">White Unicorns</option>
+              <option value="2">Yellow Unicorns</option>
+              <option value="3">Coffee Unicorns</option>
+              <option value="4">Pink Unicorns</option>
+              <option value="5">Black Unicorns</option>
+              <option value="6">Silver Unicorns</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>价格 <span class="text-danger">*</span></label>
+            <input name="price" type="number" min="0" step="0.000001" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="ladda-button btn btn-success" data-style="zoom-in">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_set_left_amount" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title">设置NFT剩余数量</h4>
+      </div>
+      <form id="form_set_left_amount">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>NFT名称 <span class="text-danger">*</span></label>
+            <select name="level" class="form-control">
+              <option value="1">White Unicorns</option>
+              <option value="2">Yellow Unicorns</option>
+              <option value="3">Coffee Unicorns</option>
+              <option value="4">Pink Unicorns</option>
+              <option value="5">Black Unicorns</option>
+              <option value="6">Silver Unicorns</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>剩余数量 <span class="text-danger">*</span></label>
+            <input name="amount" type="number" min="0" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="ladda-button btn btn-success" data-style="zoom-in">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    let usdt_amount;
+
+    function get_contract_usdt() {
+        contract_usdt.methods.balanceOf(Constants.contract.address).call().then(balance => {
+            usdt_amount = Constants.contract_usdt.to_display_amount(balance);
+            $('#usdt_balance').text('合约USDT余额：' + usdt_amount);
+        });
+    }
+
+    function get_contract_owner() {
+        contract.methods.owner().call().then(owner => {
+            $('#contract_owner').text('合约所有者：' + owner);
+        });
+    }
+
+    function get_base_uri() {
+        contract.methods.baseURI().call().then(uri => {
+            $('#base_uri').text('NFT基础URI：' + uri);
+        });
+    }
+
+    function get_price() {
+        let prices = [];
+        contract.methods.price(1).call().then(price1 => {
+            prices.push(Constants.contract_usdt.to_display_amount(price1));
+            contract.methods.price(2).call().then(price2 => {
+                prices.push(Constants.contract_usdt.to_display_amount(price2));
+                contract.methods.price(3).call().then(price3 => {
+                    prices.push(Constants.contract_usdt.to_display_amount(price3));
+                    contract.methods.price(4).call().then(price4 => {
+                        prices.push(Constants.contract_usdt.to_display_amount(price4));
+                        contract.methods.price(5).call().then(price5 => {
+                            prices.push(Constants.contract_usdt.to_display_amount(price5));
+                            contract.methods.price(6).call().then(price6 => {
+                                prices.push(Constants.contract_usdt.to_display_amount(price6));
+                                $('#nft_prices').text('NFT价格(USDT)：' + prices.join(','));
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    function get_left_amount() {
+        let amounts = [];
+        contract.methods.leftAmount(1).call().then(amount1 => {
+            amounts.push(amount1);
+            contract.methods.leftAmount(2).call().then(amount2 => {
+                amounts.push(amount2);
+                contract.methods.leftAmount(3).call().then(amount3 => {
+                    amounts.push(amount3);
+                    contract.methods.leftAmount(4).call().then(amount4 => {
+                        amounts.push(amount4);
+                        contract.methods.leftAmount(5).call().then(amount5 => {
+                            amounts.push(amount5);
+                            contract.methods.leftAmount(6).call().then(amount6 => {
+                                amounts.push(amount6);
+                                $('#nft_left_amounts').text('NFT剩余数量：' + amounts.join(','));
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    function get_market_status() {
+        contract.methods.isMarketOpen().call().then(opened => {
+            $('#market_open').text('市场状态：' + (opened ? '已开启' : '已关闭'));
+        });
+    }
+
+    function withdraw_usdt() {
+        $('#form_withdraw_usdt')[0].reset();
+        $('#form_withdraw_usdt input[name="amount"]').val(usdt_amount);
+        $('#modal_withdraw_usdt').modal('show');
+    }
+
+    function transfer_ownership() {
+        $('#form_transfer_ownership')[0].reset();
+        $('#modal_transfer_ownership').modal('show');
+    }
+
+    function set_base_uri() {
+        $('#form_set_base_uri')[0].reset();
+        $('#modal_set_base_uri').modal('show');
+    }
+
+    function set_price() {
+        $('#form_set_price')[0].reset();
+        $('#modal_set_price').modal('show');
+    }
+
+    function set_left_amount() {
+        $('#form_set_left_amount')[0].reset();
+        $('#modal_set_left_amount').modal('show');
+    }
+
+    function open_market() {
+        contract.methods.switchMarket(true).send({from: address})
+            .on('receipt', receipt => {
+                get_market_status();
+                swal('成功', '开启市场成功', 'success')
+            })
+            .on('error', err => {
+                swal('错误', err.message, 'error');
+            });
+    }
+
+    function close_market() {
+        contract.methods.switchMarket(false).send({from: address})
+            .on('receipt', receipt => {
+                get_market_status();
+                swal('成功', '关闭市场成功', 'success')
+            })
+            .on('error', err => {
+                swal('错误', err.message, 'error');
+            });
+    }
+
+    load_data = function () {
+        get_contract_usdt();
+        get_contract_owner();
+        get_base_uri();
+        get_price();
+        get_left_amount();
+        get_market_status();
+
+        $('#form_withdraw_usdt').submit(function () {
+            let l = $('#form_withdraw_usdt button[type="submit"]').ladda();
+            l.ladda('start');
+            let to = $('#form_withdraw_usdt input[name="receipt"]').val().trim(),
+                amount = $('#form_withdraw_usdt input[name="amount"]').val().trim();
+            amount = Constants.contract_usdt.to_real_amount(amount);
+
+            contract.methods.withdraw(to, amount).send({from: address})
+                .on('receipt', receipt => {
+                    l.ladda('stop');
+                    get_contract_usdt();
+                    $('#modal_withdraw_usdt').modal('hide');
+                    swal('成功', '提现成功', 'success')
+                })
+                .on('error', err => {
+                    l.ladda('stop');
+                    swal('错误', err.message, 'error');
+                });
+
+            return false;
+        });
+
+        $('#form_transfer_ownership').submit(function () {
+            let l = $('#form_transfer_ownership button[type="submit"]').ladda();
+            l.ladda('start');
+            let to = $('#form_transfer_ownership input[name="new_owner"]').val().trim();
+
+            contract.methods.transferOwnership(to).send({from: address})
+                .on('receipt', receipt => {
+                    l.ladda('stop');
+                    get_contract_owner();
+                    $('#modal_transfer_ownership').modal('hide');
+                    swal('成功', '转移所有权成功', 'success')
+                })
+                .on('error', err => {
+                    l.ladda('stop');
+                    swal('错误', err.message, 'error');
+                });
+
+            return false;
+        });
+
+        $('#form_set_base_uri').submit(function () {
+            let l = $('#form_set_base_uri button[type="submit"]').ladda();
+            l.ladda('start');
+            let uri = $('#form_set_base_uri input[name="base_uri"]').val().trim();
+
+            contract.methods.setBaseURI(uri).send({from: address})
+                .on('receipt', receipt => {
+                    l.ladda('stop');
+                    get_base_uri();
+                    $('#modal_set_base_uri').modal('hide');
+                    swal('成功', '设置NFT基础URI成功', 'success')
+                })
+                .on('error', err => {
+                    l.ladda('stop');
+                    swal('错误', err.message, 'error');
+                });
+
+            return false;
+        });
+
+        $('#form_set_price').submit(function () {
+            let l = $('#form_set_price button[type="submit"]').ladda();
+            l.ladda('start');
+            let level = $('#form_set_price select[name="level"]').val().trim(),
+                price = $('#form_set_price input[name="price"]').val().trim();
+            price = Constants.contract_usdt.to_real_amount(price);
+
+            contract.methods.setPrice(level, price).send({from: address})
+                .on('receipt', receipt => {
+                    l.ladda('stop');
+                    get_price();
+                    $('#modal_set_price').modal('hide');
+                    swal('成功', '设置NFT价格成功', 'success')
+                })
+                .on('error', err => {
+                    l.ladda('stop');
+                    swal('错误', err.message, 'error');
+                });
+
+            return false;
+        });
+
+        $('#form_set_left_amount').submit(function () {
+            let l = $('#form_set_left_amount button[type="submit"]').ladda();
+            l.ladda('start');
+            let level = $('#form_set_left_amount select[name="level"]').val().trim(),
+                amount = $('#form_set_left_amount input[name="amount"]').val().trim();
+
+            contract.methods.setLeftAmount(level, amount).send({from: address})
+                .on('receipt', receipt => {
+                    l.ladda('stop');
+                    get_left_amount();
+                    $('#modal_set_left_amount').modal('hide');
+                    swal('成功', '设置NFT剩余数量成功', 'success')
+                })
+                .on('error', err => {
+                    l.ladda('stop');
+                    swal('错误', err.message, 'error');
+                });
+
+            return false;
+        });
+    };
+</script>

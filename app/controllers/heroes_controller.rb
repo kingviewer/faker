@@ -27,12 +27,33 @@ class HeroesController < ApplicationController
     }
   ]
 
+  def level1
+    gen_result(1)
+  end
+
+  def level2
+    gen_result(2)
+  end
+
+  def level3
+    gen_result(3)
+  end
+
+  def level4
+    gen_result(4)
+  end
+
+  def level5
+    gen_result(5)
+  end
+
+  def level6
+    gen_result(6)
+  end
+
   private
 
-  def method_missing(symbol, *args)
-    super
-    if symbol =~ /^level(\d)$/
-      render json: HEROES[$1.to_i - 1], status: :ok
-    end
+  def gen_result(i)
+    render json: HEROES[i - 1], status: :ok
   end
 end

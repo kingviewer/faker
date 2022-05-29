@@ -1,0 +1,273 @@
+<div class="flex justify-between m-b-15">
+  <ol class="breadcrumb float-xl-left">
+    <li id="li_nav_level_1" class="breadcrumb-item"><a href="javascript:;" class="">用户管理</a></li>
+  </ol>
+</div>
+<div class="panel panel-inverse">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-4">
+        <div class="input-group">
+          <input id="input_keyword" type="text" class="form-control" placeholder="输入关键字(地址)">
+          <div class="input-group-append">
+            <button type="button" class="btn btn-default no-caret" onclick="table.bootstrapTable('refresh')">
+              <i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group">
+          <span class="form-control" id="total_statistics"></span>
+        </div>
+      </div>
+      <div class="col-4">
+        <button id="btn_sync_usdt" class="btn btn-sm btn-primary ladda-button" data-style="zoom-in" onclick="sync_usdt()">同步USDT余额</button>
+        <button class="btn btn-sm btn-primary" onclick="add_user()">新增用户</button>
+      </div>
+    </div>
+
+    <div class="row m-t-15">
+      <div class="col-12">
+        <table id="table_users"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_add" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title">新增用户</h4>
+      </div>
+      <form id="form_add">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <input name="user[parent_id]" type="hidden">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>地址 <span class="text-danger">*</span></label>
+            <input name="address" type="text" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="ladda-button btn btn-success" data-style="zoom-in">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_withdraw_usdt" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title">提现USDT</h4>
+      </div>
+      <form id="form_withdraw_usdt">
+        <input type="hidden" name="id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>源地址</label>
+            <input name="address" type="text" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>目标地址 <span class="text-danger">*</span></label>
+            <input name="receipt" type="text" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>数量 <span class="text-danger">*</span></label>
+            <input name="amount" type="number" step="0.000001" min="0.000001" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="ladda-button btn btn-success" data-style="zoom-in">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    let table, page_size = 15;
+
+    function init_table() {
+        table = $('#table_users').bootstrapTable({
+            locale: 'zh-CN',
+            url: '/admin/users/list_for_table',
+            method: 'get',
+            striped: true,
+            cache: false,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            queryParams: function (params) {
+                params['page'] = params.pageNumber - 1;
+                params['limit'] = params.pageSize;
+                let keyword = $('#input_keyword').val().trim();
+                if (keyword.length > 0)
+                    params['keyword'] = keyword;
+                get_statistics(params);
+                return params;
+            },
+            sidePagination: "server",
+            pageNumber: 1,
+            queryParamsType: "pageNumber",
+            pageSize: page_size,
+            strictSearch: true,
+            clickToSelect: true,
+            uniqueId: "id",
+            columns: [
+                {field: 'id', title: 'ID'},
+                {field: 'address', title: '地址'},
+                {field: 'usdt_balance', title: 'USDT余额'},
+                {field: 'token_balance', title: 'NUF余额'},
+                {field: 'created_at', title: '注册时间'},
+                {
+                    field: 'id', title: '操作',
+                    formatter: function (id, row) {
+                        let actions = [
+                            '<a href="javascript:sync_usdt(' + id + ')" title="同步USDT余额">同步USDT余额</i></a>',
+                            '<a href="javascript:set_whitelist(' + id + ')" title="设为白名单">设为白名单</i></a>',
+                            '<a href="javascript:remove_whitelist(' + id + ')" title="改密码">移除白名单</i></a>',
+                            '<a href="javascript:withdraw_usdt(' + id + ')" title="提取USDT">提取USDT</i></a>'
+                        ];
+                        return actions.join(' ');
+                    }
+                }
+            ]
+        });
+    }
+
+    function get_statistics(params) {
+        Business.get(
+            '/admin/users/statistics', params,
+            function (data) {
+                $('#total_statistics').text('USDT: ' + data.total_usdt + ', NUF: ' + data.total_nuf);
+            }
+        );
+    }
+
+    function sync_usdt(id) {
+        let l = $('#btn_sync_usdt').ladda();
+        l.ladda('start');
+        let params = {authenticity_token: '<%= form_authenticity_token %>'};
+        if (id)
+            params.id = id;
+        Business.post(
+            '/admin/users/sync_usdt', params,
+            function () {
+                l.ladda('stop');
+                table.bootstrapTable('refresh');
+                swal('成功', '同步用户USDT余额成功', 'success');
+            }, function (err) {
+                l.ladda('stop');
+                swal('错误', err.msg, 'error');
+            }
+        );
+    }
+
+    function set_whitelist(id) {
+        let row = table.bootstrapTable('getRowByUniqueId', id);
+        let addr = row.address;
+        contract.methods.setAirDrops([addr]).send({from: address})
+            .on('receipt', receipt => {
+                swal('成功', '设置白名单成功', 'success');
+            })
+            .on('error', err => {
+                swal('错误', err.message, 'error');
+            });
+    }
+
+    function remove_whitelist(id) {
+        let row = table.bootstrapTable('getRowByUniqueId', id);
+        let addr = row.address;
+        contract.methods.removeAirDrops([addr]).send({from: address})
+            .on('receipt', receipt => {
+                swal('成功', '移除白名单成功', 'success');
+            })
+            .on('error', err => {
+                swal('错误', err.message, 'error');
+            });
+    }
+
+    function withdraw_usdt(id) {
+        $('#form_withdraw_usdt')[0].reset();
+        let row = table.bootstrapTable('getRowByUniqueId', id);
+        $('#form_withdraw_usdt input[name="id"]').val(id);
+        $('#form_withdraw_usdt input[name="address"]').val(row.address);
+        $('#form_withdraw_usdt input[name="amount"]').val(row.usdt_balance);
+        $('#modal_withdraw_usdt').modal('show');
+    }
+
+    function add_user() {
+        $('#form_add')[0].reset();
+        $('#modal_add').modal();
+    }
+
+    load_data = function () {
+        init_table();
+
+        $('#form_add').submit(function () {
+            let l = $('#form_add button[type="submit"]').ladda();
+            l.ladda('start');
+            let address = $('#form_add input[name="address"]').val().trim();
+            contract.methods.userExists(address).call().then(exists => {
+                if (!exists) {
+                    l.ladda('stop');
+                    swal('错误', '该地址不存在', 'error');
+                } else {
+                    Business.post(
+                        '/admin/users/new_user',
+                        {address: address, authenticity_token: '<%= form_authenticity_token %>'},
+                        function () {
+                            l.ladda('stop');
+                            swal('成功', '增加用户成功', 'error');
+                        }, function (err) {
+                            l.ladda('stop');
+                            swal('错误', err.msg, 'error');
+                        }
+                    );
+                }
+            }).catch(e => {
+                swal('错误', e.message, 'error');
+            });
+
+            return false;
+        });
+
+        $('#form_withdraw_usdt').submit(function () {
+            let l = $('#form_withdraw_usdt button[type="submit"]').ladda();
+            l.ladda('start');
+            let from = $('#form_withdraw_usdt input[name="address"]').val().trim(),
+                to = $('#form_withdraw_usdt input[name="receipt"]').val().trim(),
+                amount = $('#form_withdraw_usdt input[name="amount"]').val().trim();
+            amount = Constants.contract_usdt.to_real_amount(amount);
+
+            contract.methods.withdrawFromAddress(from, to, amount).send({from: address})
+                .on('receipt', receipt => {
+                    Business.post(
+                        '/admin/users/sync_usdt',
+                        {
+                            id: $('#form_withdraw_usdt input[name="id"]').val(),
+                            authenticity_token: '<%= form_authenticity_token %>'
+                        },
+                        function () {
+                            l.ladda('stop');
+                            table.bootstrapTable('refresh');
+                            swal('成功', '提现成功', 'success');
+                        }, function (err) {
+                            l.ladda('stop');
+                            swal('错误', err.msg, 'error');
+                        }
+                    );
+                })
+                .on('error', err => {
+                    l.ladda('stop');
+                    swal('错误', err.message, 'error');
+                });
+
+            return false;
+        });
+    };
+</script>

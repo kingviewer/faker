@@ -6,6 +6,7 @@ class CreateUsers < ActiveRecord::Migration[6.1]
       t.integer :nft_amount, null: false, default: 0, comment: 'NFT数量'
       t.integer :children_amount, null: false, default: 0, comment: '邀请的用户数'
       t.decimal :token_balance, null: false, default: 0, precision: 20, scale: 8, comment: 'Token余额'
+      t.boolean :syncing_usdt, null: false, default: false, comment: '是否正在同步USDT余额'
 
       t.timestamps
     end
