@@ -30,3 +30,4 @@
 /contracts/build/
 /db/schema.rb
 /.idea
+/Gemfile.lock
