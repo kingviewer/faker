@@ -15,8 +15,14 @@
         <ul>
           <li><a href="javascript:void(0)"><i class="bi bi-cash-coin"></i><span id="span_my_token">- NUF</span></a></li>
           <li><a href="javascript:void(0)"><i class="bi bi-images"></i><span id="span_my_nft">- NFT</span></a></li>
-          <div>Copy to invite:</div>
-          <small id="span_my_url">-</small>
+          <li>
+            <a href="javascript:void(0)"><i class="fas fa-user"></i><span id="span_children_count">- Children</span></a>
+          </li>
+          <div>Click
+            <i id="copy_my_url" class="fas fa-copy" data-clipboard-action="copy" data-clipboard-target="#span_my_url"
+               onclick="copy_data('copy_my_url')"></i> to copy your invitation url:
+          </div>
+          <small style="word-break: break-all" id="span_my_url">-</small>
         </ul>
       </div>
     </div>
@@ -43,7 +49,14 @@
         if (registered) {
             load_my_info();
             load_my_nft();
+            load_children_count();
         }
+    }
+
+    function copy_data(obj) {
+        new Clipboard('#' + obj).on('success', function (e) {
+            swal('Notice', 'Copied');
+        });
     }
 
     function load_my_info() {
@@ -113,10 +126,17 @@
         });
     }
 
+    function load_children_count() {
+        contract.methods.childrenCount(address).call().then(count => {
+            $('#span_children_count').text(count + ' Children');
+        });
+    }
+
     call_backs.push(
         function () {
             load_my_info();
             load_my_nft();
+            load_children_count();
         }
     );
 </script>

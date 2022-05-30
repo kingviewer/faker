@@ -9,10 +9,20 @@ class User::AssetFlowsController < User::BaseController
           formatted_amount: "#{'+' if flow.amount >= 0}#{LZUtils.format_number(flow.amount, 8)}",
           flow_type_name: flow.flow_type_name,
           created_at: flow.formatted_created_at,
+          collected: flow.collected,
           color: flow.amount >= 0 ? 'green' : 'red'
         }
       end
     end
     success(data)
+  end
+
+  def collect_all
+    if cur_user
+      cur_user.asset_flows.each do |flow|
+        flow.collect
+      end
+    end
+    success
   end
 end

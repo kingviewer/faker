@@ -10,4 +10,11 @@ class AssetFlow < ApplicationRecord
       '--'
     end
   end
+
+  def collect
+    with_lock do
+      User.where(id: id).update_all(['token_balance = token_balance + ?', amount])
+      update(collected: true)
+    end
+  end
 end

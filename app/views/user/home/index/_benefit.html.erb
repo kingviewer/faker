@@ -1,4 +1,6 @@
-<div class="container margin_30_40">
+<div class="container margin_30_40 text-center">
+  <a id="a_collect_benefits" style="display: none" class="btn_1 medium pulse_bt mb-3" data-style="zoom-in" onclick="collect_benefits()">To
+    receive</a>
   <div id="token_flows" class="row isotope-wrapper">
   </div>
   <div id="load_more" class="text-center" style="display: none">
@@ -15,12 +17,27 @@
     function load_benefit_data() {
         $('#token_flows').empty();
         cur_page = 0;
-        load_flows();
+        if (address)
+            load_flows();
+    }
+
+    function collect_benefits() {
+        Business.post(
+            '/user/asset_flows/collect_all', {
+                address: address,
+                authenticity_token: '<%= form_authenticity_token %>'
+            }, function () {
+                load_benefit_data();
+                swal('Success', 'All received', 'success');
+            }, function (err) {
+                swal('Error', err.msg, 'error');
+            }
+        );
     }
 
     function load_flows() {
         let symbol = 'NUF', container = $('#token_flows'), div_no_record = $('#no_record'),
-            div_load_more = $('#load_more');
+            div_load_more = $('#load_more'), has_collect = false;
         div_load_more.hide();
         Business.get(
             '/user/asset_flows/list', {
@@ -32,6 +49,8 @@
                 let html = '';
                 for (let i = 0; i < data.length; i++) {
                     let item = data[i];
+                    if (!item.collected)
+                        has_collect = true;
                     html += '<div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 isotope-item art">' +
                         '<div class="strip mb-2">' +
                         '<ul class="mb-0 pb-0">' +
@@ -44,7 +63,8 @@
                         '<ul>' +
                         '<li>' +
                         '<div class="wish_bt"></div>' + item.flow_type_name +
-                        '</li>' +
+                        ' (' + (item.collected ? '<span class="text-primary">Received</span>' : '<span class="text-danger">Not received</span>') +
+                        ')</li>' +
                         '<li>' +
                         '<div class="wish_bt"></div>' + item.created_at +
                         '</li>' +
@@ -62,10 +82,19 @@
                     div_load_more.hide();
                 }
                 cur_page++;
+
+                if (has_collect)
+                    $('#a_collect_benefits').show();
+                else
+                    $('#a_collect_benefits').hide();
             },
             function (err) {
                 swal('Error', err.msg, 'error');
             }
         );
     }
+
+    call_backs.push(function () {
+        load_flows();
+    });
 </script>

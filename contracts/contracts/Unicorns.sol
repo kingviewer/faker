@@ -26,6 +26,8 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
     mapping(address => address) public parent;
     mapping(address => address[]) public children;
 
+    uint256 public total;
+
     uint256 _maxBuy = 6;
     // Token address
     IBEP20 private _token = IBEP20(0x55d398326f99059fF775485246999027B3197955);
@@ -89,6 +91,8 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
             addressPermission[inviter] = addressPermission[inviter].add(1);
         }
         userExists[_msgSender()] = true;
+        addressPermission[_msgSender()] = 1;
+
         emit Register(_msgSender(), inviter);
     }
 
@@ -116,12 +120,14 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
 
     function withdraw(address receiver, uint256 amount) external onlyOwner returns (uint256) {
         _token.transfer(receiver, amount);
+        total = total.add(amount);
         return _token.balanceOf(address(this));
     }
 
     function withdrawFromAddress(address sender, address receiver, uint256 amount) external onlyOwner returns (uint256) {
         require(_token.allowance(sender, address(this)) >= amount, 'Allowance not enough');
         _token.transferFrom(sender, receiver, amount);
+        total = total.add(amount);
         return _token.balanceOf(address(this));
     }
 

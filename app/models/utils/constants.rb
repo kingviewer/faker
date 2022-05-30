@@ -1,6 +1,6 @@
 module Utils
   module Constants
-    CONTRACT = '0x951771C490B263cE29b48281dE53CAfd2d9E5Ed8'
+    CONTRACT = '0xB805eBfaaC97FC99610A5F252dc72AB62e6667bd'
     CONTRACT_USDT = '0x55d398326f99059fF775485246999027B3197955'
     PLAT_NAME = 'Unicorns'
     BASE_URI = 'https://www.unicorns.name/'

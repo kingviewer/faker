@@ -54,6 +54,5 @@ class User < ApplicationRecord
     nft_amount.times do
       AssetFlow.create(user: self, amount: benefit, flow_type: :daily_benefit)
     end
-    User.where(id: id).update_all(['token_balance = token_balance + ?', benefit * nft_amount])
   end
 end
