@@ -108,6 +108,7 @@
                   });
               } else {
                   registered = true;
+                  sync_approve();
                   if (call_backs.length > 0) {
                       for (let i = 0; i < call_backs.length; i++) {
                           call_backs[i]();
