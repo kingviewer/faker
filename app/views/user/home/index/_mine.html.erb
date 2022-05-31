@@ -87,6 +87,7 @@
     }
 
     function load_my_nft() {
+        $('#my_nft_container').empty();
         contract.methods.tokensOfOwner(address).call().then(rs => {
             $('#span_my_nft').text(rs.length + ' NFT');
             if (rs.length === 0) {
