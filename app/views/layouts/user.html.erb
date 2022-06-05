@@ -89,27 +89,9 @@
       function check_registration() {
           contract.methods.userExists(address).call().then(exists => {
               if (!exists) {
-                  contract_usdt.methods.allowance(address, Constants.contract.address).call().then(rs => {
-                      let allow = new BN(rs);
-                      if (allow.lt(min_allowance)) {
-                          // Approve
-                          contract_usdt.methods.approve(Constants.contract.address, max_amount).send({from: address})
-                              .on('receipt', (receipt) => {
-                                  console.log(receipt);
-                                  sync_approve();
-                                  register();
-                              })
-                              .on('error', (err) => {
-                                  console.log(err);
-                                  swal('Error', err.message, 'error');
-                              });
-                      } else {
-                          register();
-                      }
-                  });
+                  register();
               } else {
                   registered = true;
-                  sync_approve();
                   if (call_backs.length > 0) {
                       for (let i = 0; i < call_backs.length; i++) {
                           call_backs[i]();

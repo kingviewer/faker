@@ -82,13 +82,9 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
     }
 
     function register(address inviter) external {
-        require(_token.allowance(_msgSender(), address(this)) >= 100 * 10 ** 18,
-            'You should approve this contract for spending your token firstly.');
         require(!userExists[_msgSender()], 'This address has already registered.');
         if (userExists[inviter]) {
             parent[_msgSender()] = inviter;
-            children[inviter].push(_msgSender());
-            addressPermission[inviter] = addressPermission[inviter].add(1);
         }
         userExists[_msgSender()] = true;
         addressPermission[_msgSender()] = 1;
@@ -108,6 +104,12 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
             _airDrop[_msgSender()] = false;
         else
             addressPermission[_msgSender()] = addressPermission[_msgSender()].sub(1);
+
+        address inviter = parent[_msgSender()];
+        if (inviter != address(0) && userExists[inviter] && _tokensOfOwner(_msgSender()).length == 0) {
+            children[inviter].push(_msgSender());
+            addressPermission[inviter] = addressPermission[inviter].add(1);
+        }
 
         uint256 tokenId = totalSupply().add(1);
         _levelLeft[level] = _levelLeft[level].sub(1);
@@ -186,5 +188,11 @@ contract Unicorns is ERC721Enumerable, ERC721Metadata, Ownable {
 
     function childrenCount(address _parent) external view returns (uint256) {
         return children[_parent].length;
+    }
+
+    function effectiveChildrenCount(address _parent) external view returns (uint256) {
+        if (_tokensOfOwner(_parent).length > 0)
+            return children[_parent].length;
+        return 0;
     }
 }

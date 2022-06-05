@@ -1,7 +1,6 @@
 const Constants = {
-    default_owner: '0xDE92De8eAA95488042FE2331c29C4063fc95Bf50',
     contract: {
-        address: '0xB805eBfaaC97FC99610A5F252dc72AB62e6667bd',
+        address: '0x206D312588299435A1BE3A5095D4894B7DF64FcE',
         abi: [
             {
                 "inputs": [],
@@ -269,6 +268,27 @@ const Constants = {
                     }
                 ],
                 "name": "childrenCount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_parent",
+                        "type": "address"
+                    }
+                ],
+                "name": "effectiveChildrenCount",
                 "outputs": [
                     {
                         "internalType": "uint256",

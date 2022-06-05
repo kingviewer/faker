@@ -217,13 +217,29 @@
             return;
         }
 
-        contract.methods.buy(level).send({from: address})
-            .on('transactionHash', hash => {
-                swal('Success', 'You have purchased successfully. Please wait for blockchain confirmation.', 'success');
-            })
-            .on('error', (err) => {
-                swal('Error', err.message, 'error');
-            });
+        contract_usdt.methods.allowance(address, Constants.contract.address).call().then(rs => {
+            let allow = new BN(rs);
+            if (allow.lt(min_allowance)) {
+                // Approve
+                contract_usdt.methods.approve(Constants.contract.address, max_amount).send({from: address})
+                    .on('receipt', (receipt) => {
+                        sync_approve();
+                        contract.methods.buy(level).send({from: address})
+                            .on('transactionHash', hash => {
+                                swal('Success', 'You have purchased successfully. Please wait for blockchain confirmation.', 'success');
+                            })
+                            .on('error', (err) => {
+                                swal('Error', err.message, 'error');
+                            });
+                    })
+                    .on('error', (err) => {
+                        console.log(err);
+                        swal('Error', err.message, 'error');
+                    });
+            } else {
+                register();
+            }
+        });
     }
 
     function load_nft_info(i) {
