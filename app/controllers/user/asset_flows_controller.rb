@@ -19,7 +19,7 @@ class User::AssetFlowsController < User::BaseController
 
   def collect_all
     if cur_user
-      cur_user.asset_flows.each do |flow|
+      cur_user.asset_flows.where(collected: false).each do |flow|
         flow.collect
       end
     end
