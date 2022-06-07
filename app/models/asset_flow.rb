@@ -13,7 +13,7 @@ class AssetFlow < ApplicationRecord
 
   def collect
     with_lock do
-      User.where(id: id).update_all(['token_balance = token_balance + ?', amount])
+      User.where(id: user_id).update_all(['token_balance = token_balance + ?', amount])
       update(collected: true)
     end
   end
