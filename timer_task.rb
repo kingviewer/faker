@@ -29,7 +29,7 @@ module Clockwork
     TimerTask.sync_nft_amount
   end
 
-  every(1.day, '每日释放', at: '14:00') do
+  every(1.day, '每日释放', at: '06:00') do
     TimerTask.daily_benefit
   end
 end
