@@ -7,7 +7,7 @@ class User < ApplicationRecord
   after_create :sync_parent
 
   def self.sync_parents
-    User.where(parent_id: nil) do |user|
+    User.where(parent_id: nil).each do |user|
       user.sync_parent
     end
   end
