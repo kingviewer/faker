@@ -25,13 +25,13 @@ class User < ApplicationRecord
   end
 
   def sync_parent
-    p = send_cmd(
+    addr_parent = send_cmd(
       'get_parent',
       Utils::Constants::BSC_PRC,
-      Utils::Constants::CONTRACT_USDT,
+      Utils::Constants::CONTRACT,
       address
     )
-    if (user = User.find_by_address(p))
+    if (user = User.find_by_address(addr_parent))
       update(parent_id: user.id)
     end
   end

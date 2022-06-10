@@ -1026,4 +1026,6 @@ const abi = [
 let rpc = process.argv[2], addr_contract = process.argv[3], address = process.argv[4];
 let web3 = new Web3(new Web3.providers.HttpProvider(rpc));
 let contract = new web3.eth.Contract(abi, addr_contract);
-contract.methods.parent(address).call().then(parent => console.log(parent));
+contract.methods.parent(address).call().then(parent => console.log(parent)).catch(e => {
+    console.log(e)
+});
