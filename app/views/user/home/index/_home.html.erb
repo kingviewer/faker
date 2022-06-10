@@ -250,9 +250,7 @@
 
     function load_nft_info(i) {
       contract.methods.price(i).call().then(price => {
-          contract.methods.leftAmount(i).call().then(left => {
-              $('#nft_' + i + '_price').text(Constants.contract_usdt.to_display_amount(price) + ' USDT / ' + left + ' Left');
-          });
+          $('#nft_' + i + '_price').text(Constants.contract_usdt.to_display_amount(price) + ' USDT');
       });
     }
 
