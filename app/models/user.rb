@@ -14,7 +14,7 @@ class User < ApplicationRecord
 
   def grandson_amount
     if children_amount > 0
-      amount = children_amount
+      amount = 0
       children.each do |child|
         amount += child.children_amount
       end
