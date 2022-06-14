@@ -13,7 +13,7 @@ class User::WithdrawsController < User::BaseController
     get_cur_user
     if cur_user
       amount = BigDecimal(params[:withdraw][:amount], 6)
-      if amount <= 0
+      if amount < 10000
         error('Invalid amount')
       elsif not valid_address?(params[:withdraw][:address])
         error('Invalid address')
