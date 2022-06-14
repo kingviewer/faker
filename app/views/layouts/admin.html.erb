@@ -125,6 +125,12 @@
             <span>用户管理</span>
           </a>
         </li>
+        <li class="<%= 'active' if params[:controller] == 'admin/withdraws' && params[:action] == 'index' %>">
+          <a href="/admin/withdraws/index">
+            <i class="fa fa-list-alt"></i>
+            <span>提现管理</span>
+          </a>
+        </li>
         <!-- begin sidebar minify button -->
         <li>
           <a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a>

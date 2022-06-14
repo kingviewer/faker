@@ -1,0 +1,86 @@
+<div class="panel panel-inverse">
+  <div class="panel-body text-white">
+    <h5 class="panel-title">Withdraw NUF</h5>
+    <%= form_with(model: Withdraw.new, url: '/user/withdraws/create', id: 'form_withdraw', local: true) do |form| %>
+      <input id="hidden_address" type="hidden" name="address">
+      <div class="form-group">
+        <label class="text-black">To address</label>
+        <div class="input-group m-b-10">
+          <%= form.text_field :address, class: 'form-control  form-control-lg', placeholder: 'Input the receipt address', required: true %>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="amount" class="text-black">Amount</label>
+        <div class="input-group m-b-10">
+          <%= form.number_field :amount, class: 'form-control form-control-lg', min: 1, required: true %>
+          <div class="input-group-append m-l-0">
+            <span class="input-group-text bg-white-opacity-25">NUF</span>
+          </div>
+        </div>
+        <div>
+          <small class="f-s-12 text-grey-darker" id="small_available">- NUF available</small>
+        </div>
+      </div>
+      <div class="form-group">
+        <button id="btn_submit" type="submit" class="ladda-button btn btn-lg btn-blue btn-block" data-style="zoom-in">Confirm</button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+    let l;
+
+    $(function () {
+        set_header_right_btn('fa fa-list', () => {
+            location.href = '/user/withdraws/index';
+        });
+
+        l = $('#btn_submit').ladda();
+        l.ladda('start');
+    });
+
+    function load_data() {
+        $('#withdraw_address').val(address);
+        $('#hidden_address').val(address);
+
+        Business.get(
+            '/user/users/my_info', {address: address},
+            function (data) {
+                l.ladda('stop');
+                $('#small_available').text(data.token_balance + ' NUF available');
+            }
+        );
+
+        $('#form_withdraw').submit(function () {
+            let l = $('#btn_submit').ladda();
+            l.ladda('start');
+            Business.submit_form(
+                '/user/withdraws/create', 'form_withdraw',
+                function (data) {
+                    l.ladda('stop');
+                    swal({
+                        title: 'Success',
+                        text: 'Create withdrawal request successfully.',
+                        icon: 'success',
+                        buttons: {
+                            confirm: {
+                                text: 'OK',
+                                value: true,
+                                visible: true,
+                                className: 'btn btn-success',
+                                closeModal: true
+                            }
+                        }
+                    }).then(function () {
+                        location.href = '/user/withdraws/index';
+                    });
+                }, function (data) {
+                    l.ladda('stop');
+                    swal('Error', data.msg, 'error');
+                }
+            );
+            return false;
+        });
+    }
+</script>

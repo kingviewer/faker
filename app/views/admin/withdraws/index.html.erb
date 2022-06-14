@@ -1,0 +1,103 @@
+<div class="flex justify-between m-b-15">
+  <ol class="breadcrumb float-xl-left">
+    <li id="li_nav_level_1" class="breadcrumb-item"><a href="javascript:;" class="">提现管理</a></li>
+  </ol>
+</div>
+<div class="panel panel-inverse">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-4">
+        <div class="input-group">
+          <input id="input_keyword" type="text" class="form-control" placeholder="输入关键字(地址)">
+          <div class="input-group-append">
+            <button type="button" class="btn btn-default no-caret" onclick="table.bootstrapTable('refresh')">
+              <i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row m-t-15">
+      <div class="col-12">
+        <table id="table_withdraws"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    let table, page_size = 15;
+
+    function init_table() {
+        table = $('#table_withdraws').bootstrapTable({
+            locale: 'zh-CN',
+            url: '/admin/withdraws/list_for_table',
+            method: 'get',
+            striped: true,
+            cache: false,
+            pagination: true,
+            contentType: "application/x-www-form-urlencoded",
+            queryParams: function (params) {
+                params['page'] = params.pageNumber - 1;
+                params['limit'] = params.pageSize;
+                let keyword = $('#input_keyword').val().trim();
+                if (keyword.length > 0)
+                    params['keyword'] = keyword;
+                return params;
+            },
+            sidePagination: "server",
+            pageNumber: 1,
+            queryParamsType: "pageNumber",
+            pageSize: page_size,
+            strictSearch: true,
+            clickToSelect: true,
+            uniqueId: "id",
+            columns: [
+                {field: 'id', title: 'ID'},
+                {field: 'amount', title: 'NUF数量'},
+                {field: 'address', title: '地址'},
+                {field: 'state_name', title: '状态'},
+                {field: 'created_at', title: '创建时间'},
+                {
+                    field: 'id', title: '操作',
+                    formatter: function (id, row) {
+                        let actions = [];
+                        if (row.state === 'pending') {
+                            actions.push(
+                                '<a href="javascript:approve(' + id + ')" title="已转出">已转出</i></a>',
+                                '<a href="javascript:refuse(' + id + ')" title="拒绝">拒绝</i></a>'
+                            );
+                        }
+                        return actions.join(' ');
+                    }
+                }
+            ]
+        });
+    }
+
+    function approve(id) {
+        Business.get(
+            '/admin/withdraws/transferred', {id: id},
+            function () {
+                table.bootstrapTable('refresh');
+            }
+        );
+    }
+
+    function refuse(id) {
+        Business.get(
+            '/admin/withdraws/refuse', {id: id},
+            function () {
+                table.bootstrapTable('refresh');
+            }
+        );
+    }
+
+    load_data = function () {
+        // init_table();
+    };
+
+    $(function () {
+        init_table();
+    });
+</script>

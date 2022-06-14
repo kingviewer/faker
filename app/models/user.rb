@@ -3,6 +3,7 @@ class User < ApplicationRecord
   belongs_to :parent, class_name: 'User', required: false
   has_many :children, class_name: 'User', foreign_key: :parent_id
   has_many :asset_flows
+  has_many :withdraws
 
   after_create :sync_parent
 

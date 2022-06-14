@@ -1,5 +1,5 @@
 class AssetFlow < ApplicationRecord
-  enum flow_type: [:daily_benefit, :team_reward]
+  enum flow_type: [:daily_benefit, :team_reward, :withdraw]
 
   belongs_to :user
 
@@ -8,6 +8,8 @@ class AssetFlow < ApplicationRecord
       'Daily benefit'
     elsif team_reward?
       'Team reward'
+    elsif withdraw?
+      'Withdrawal'
     else
       '--'
     end

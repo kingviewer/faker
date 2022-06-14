@@ -1,0 +1,53 @@
+<div id="container">
+</div>
+<div id="div_load_more" class="text-center" style="display: none">
+  <button id="btn_load_more" class="ladda-button btn btn-sm btn-blue" onclick="load_withdraws()">Load more</button>
+</div>
+<div id="div_no_record" class="text-center p-10" style="display: none">
+  <small><i class="fa fa-exclamation-circle"></i> No Record</small>
+</div>
+<script type="text/javascript">
+    let page_size = 20, cur_page = 0;
+
+    function load_withdraws() {
+        Business.get(
+            '/user/withdraws/list', {limit: page_size, page: cur_page, address: address},
+            function (data) {
+                let html = '';
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    html += '<div class="text-gray-dark m-b-20">\n' +
+                        '  <div class="row">\n' +
+                        '    <div class="col-12">\n' +
+                        '      <h4>' + item.formatted_amount + ' NUF</h4>\n' +
+                        '    </div>\n' +
+                        '  </div>\n' +
+                        '  <div class="row">' +
+                        '    <div class="col-6 text-primary">' + item.state_name + '</div>' +
+                        '    <div class="col-6 text-right text-gray">\n' +
+                        '    ' + item.created_at + '\n' +
+                        '    </div>' +
+                        '  </div>\n' +
+                        '  <div class="row m-t-5">\n' +
+                        '    <div class="col-12"><h6>' + item.address + '</h6></div>\n' +
+                        '  </div>\n' +
+                        '</div>';
+                }
+                $('#container').append(html);
+                if (cur_page === 0 && data.length === 0) {
+                    $('#div_no_record').show();
+                }
+                if (data.length === page_size) {
+                    $('#div_load_more').show();
+                } else {
+                    $('#div_load_more').hide();
+                }
+                cur_page++;
+            }
+        );
+    }
+
+    function load_data() {
+        load_withdraws();
+    }
+</script>
