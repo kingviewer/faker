@@ -14,11 +14,11 @@
         <div class="input-group m-b-10">
           <%= form.number_field :amount, class: 'form-control form-control-lg', min: 10000, required: true %>
           <div class="input-group-append m-l-0">
-            <span class="input-group-text bg-white-opacity-25">NUF</span>
+            <span class="input-group-text bg-white-opacity-25">USDT</span>
           </div>
         </div>
         <div>
-          <small class="f-s-12 text-grey-darker" id="small_available">- NUF available</small>
+          <small class="f-s-12 text-grey-darker" id="small_available">- USDT available</small>
         </div>
       </div>
       <div class="form-group">
@@ -48,7 +48,7 @@
             '/user/users/my_info', {address: address},
             function (data) {
                 l.ladda('stop');
-                $('#small_available').text(data.token_balance + ' NUF available');
+                $('#small_available').text(data.token_balance + ' USDT available');
             }
         );
 

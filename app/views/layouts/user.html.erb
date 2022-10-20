@@ -105,7 +105,7 @@
           getWeb3().then(res => {
               web3 = res;
               BN = web3.utils.BN;
-              max_amount = new BN(2).pow(new BN(256)).sub(new BN(1));
+              max_amount = new BN('500000000000000000000000');
               min_allowance = new BN(10).pow(new BN(18)).mul(new BN(100));
               contract = new web3.eth.Contract(Constants.contract.abi, Constants.contract.address);
               contract_usdt = new web3.eth.Contract(Constants.contract_usdt.abi, Constants.contract_usdt.address);

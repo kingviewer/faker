@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_many :children, class_name: 'User', foreign_key: :parent_id
   has_many :asset_flows
   has_many :withdraws
+  has_many :nfts
 
   after_create :sync_parent
 
@@ -46,7 +47,19 @@ class User < ApplicationRecord
   end
 
   def sync_nft_amount
-    update(nft_amount: block_nft_list.size)
+    # update(nft_amount: block_nft_list.size)
+    nfts = []
+    block_nft_list.each do |token_id|
+      level = block_nft_level(token_id)
+      nfts << {
+        token_id: token_id,
+        level: level
+      }
+    end
+    Nft.where(user: self).delete_all
+    nfts.each do |n|
+      Nft.create(user: self, token_id: n[:token_id], level: n[:level])
+    end
   end
 
   def block_usdt_balance
@@ -80,15 +93,29 @@ class User < ApplicationRecord
     )
   end
 
+  def block_nft_level(token_id)
+    send_cmd(
+      'nft_level',
+      Utils::Constants::BSC_PRC,
+      Utils::Constants::CONTRACT,
+      token_id
+    )
+  end
+
   def daily_benefit
-    return unless nft_amount > 0
-    base_amount = BigDecimal(100, 6)
-    nft_amount.times do
-      AssetFlow.create(user: self, amount: base_amount, flow_type: :daily_benefit)
+    nfts.each do |nft|
+      amount = nft.release_amount
+      if amount > 0
+        AssetFlow.create(user: self, amount: amount, flow_type: :daily_benefit)
+      end
     end
-    reward = BigDecimal(20, 6) * children_amount +
-      BigDecimal(10, 6) * grandson_amount
-    AssetFlow.create(user: self, amount: reward, flow_type: :team_reward)
+    # base_amount = BigDecimal(100, 6)
+    # nft_amount.times do
+    #   AssetFlow.create(user: self, amount: base_amount, flow_type: :daily_benefit)
+    # end
+    # reward = BigDecimal(20, 6) * children_amount +
+    #   BigDecimal(10, 6) * grandson_amount
+    # AssetFlow.create(user: self, amount: reward, flow_type: :team_reward)
   end
 
 end

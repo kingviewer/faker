@@ -134,12 +134,11 @@
           <div class="form-group">
             <label>NFT名称 <span class="text-danger">*</span></label>
             <select name="level" class="form-control">
-              <option value="1">White Unicorns</option>
-              <option value="2">Yellow Unicorns</option>
-              <option value="3">Coffee Unicorns</option>
-              <option value="4">Pink Unicorns</option>
-              <option value="5">Black Unicorns</option>
-              <option value="6">Silver Unicorns</option>
+              <option value="1">A</option>
+              <option value="2">B</option>
+              <option value="3">C</option>
+              <option value="4">D</option>
+              <option value="5">E</option>
             </select>
           </div>
           <div class="form-group">
@@ -167,12 +166,11 @@
           <div class="form-group">
             <label>NFT名称 <span class="text-danger">*</span></label>
             <select name="level" class="form-control">
-              <option value="1">White Unicorns</option>
-              <option value="2">Yellow Unicorns</option>
-              <option value="3">Coffee Unicorns</option>
-              <option value="4">Pink Unicorns</option>
-              <option value="5">Black Unicorns</option>
-              <option value="6">Silver Unicorns</option>
+              <option value="1">A</option>
+              <option value="2">B</option>
+              <option value="3">C</option>
+              <option value="4">D</option>
+              <option value="5">E</option>
             </select>
           </div>
           <div class="form-group">
@@ -223,10 +221,11 @@
                         prices.push(Constants.contract_usdt.to_display_amount(price4));
                         contract.methods.price(5).call().then(price5 => {
                             prices.push(Constants.contract_usdt.to_display_amount(price5));
-                            contract.methods.price(6).call().then(price6 => {
-                                prices.push(Constants.contract_usdt.to_display_amount(price6));
-                                $('#nft_prices').text('NFT价格(USDT)：' + prices.join(','));
-                            });
+                            $('#nft_prices').text('NFT价格(USDT)：' + prices.join(','));
+                            // contract.methods.price(6).call().then(price6 => {
+                            //     prices.push(Constants.contract_usdt.to_display_amount(price6));
+                            //     $('#nft_prices').text('NFT价格(USDT)：' + prices.join(','));
+                            // });
                         });
                     });
                 });
@@ -246,10 +245,11 @@
                         amounts.push(amount4);
                         contract.methods.leftAmount(5).call().then(amount5 => {
                             amounts.push(amount5);
-                            contract.methods.leftAmount(6).call().then(amount6 => {
-                                amounts.push(amount6);
-                                $('#nft_left_amounts').text('NFT剩余数量：' + amounts.join(','));
-                            });
+                            $('#nft_left_amounts').text('NFT剩余数量：' + amounts.join(','));
+                            // contract.methods.leftAmount(6).call().then(amount6 => {
+                            //     amounts.push(amount6);
+                            //     $('#nft_left_amounts').text('NFT剩余数量：' + amounts.join(','));
+                            // });
                         });
                     });
                 });

@@ -16,7 +16,7 @@ default: &default
   host: localhost
   database: faker
   username: root
-  password: root
+  password: Mei0You1Mi2Ma3
 
 development:
   <<: *default

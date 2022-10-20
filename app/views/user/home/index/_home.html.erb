@@ -1,11 +1,12 @@
 <div class="hero_single version_2 jarallax" data-jarallax="">
-  <img class="jarallax-img" src="/static/picture/hero_general.jpg" alt="">
+<!--  <img class="jarallax-img" src="/static/picture/hero_general.jpg" alt="">-->
+  <img class="jarallax-img" src="/static/picture/banner.jpg" alt="">
   <div class="opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
     <div class="container">
       <div class="row">
         <div class="col-xl-9 col-lg-10">
-          <h1 class="one">Discover, collect,<br>and sell extraordinary NFTs</h1>
-          <h4 class="two text-white">on the world's first & largest NFT marketplace</h4>
+          <h1 class="one">Inflation in the World hits 13-year high, Don't worry,</h1>
+          <h4 class="two text-white">Unicorns can take you against inflation. A variety of products for you</h4>
           <!-- /row -->
         </div>
       </div>
@@ -30,7 +31,7 @@
           <img src="/nft_img/1.jpg" data-src="/nft_img/1.jpg" class="owl-lazy" alt="" width="533" height="400">
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
-              <h3>White Unicorns</h3>
+              <h3>Unicorns Alternative solutions fund A(Daily rate of return 1%)</h3>
               <small id="nft_1_price">- USDT / 0 Left</small>
             </div>
           </a>
@@ -60,7 +61,7 @@
           <img src="/nft_img/2.jpg" data-src="/nft_img/2.jpg" class="owl-lazy" alt="" width="533" height="400">
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
-              <h3>Yellow Unicorns</h3>
+              <h3>Unicorns Alternative solutions fund B(Daily rate of return 3%)</h3>
               <small id="nft_2_price">- USDT / 0 Left</small>
             </div>
           </a>
@@ -90,7 +91,7 @@
           <img src="/nft_img/3.jpg" data-src="/nft_img/3.jpg" class="owl-lazy" alt="" width="533" height="400">
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
-              <h3>Coffee Unicorns</h3>
+              <h3>Unicorns Alternative solutions fund C(Daily rate of return 4.5%)</h3>
               <small id="nft_3_price">- USDT / 0 Left</small>
             </div>
           </a>
@@ -120,7 +121,7 @@
           <img src="/nft_img/4.jpg" data-src="/nft_img/4.jpg" class="owl-lazy" alt="" width="533" height="400">
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
-              <h3>Pink Unicorns</h3>
+              <h3>Unicorns Alternative solutions fund D(Daily rate of return 6%) </h3>
               <small id="nft_4_price">- USDT / 0 Left</small>
             </div>
           </a>
@@ -150,7 +151,7 @@
           <img src="/nft_img/5.jpg" data-src="/nft_img/5.jpg" class="owl-lazy" alt="" width="533" height="400">
           <a href="javascript:void(0)" class="strip_info">
             <div class="item_title">
-              <h3>Black Unicorns</h3>
+              <h3>Unicorns Alternative solutions fund E(Daily rate of return 7.5%)</h3>
               <small id="nft_5_price">- USDT / 0 Left</small>
             </div>
           </a>
@@ -174,35 +175,6 @@
       </div>
     </div>
 
-    <div class="item">
-      <div class="strip">
-        <figure>
-          <img src="/nft_img/6.jpg" data-src="/nft_img/6.jpg" class="owl-lazy" alt="" width="533" height="400">
-          <a href="javascript:void(0)" class="strip_info">
-            <div class="item_title">
-              <h3>Silver Unicorns</h3>
-              <small id="nft_6_price">- USDT / 0 Left</small>
-            </div>
-          </a>
-        </figure>
-        <ul>
-          <li>
-            <a href="javascript:void(0)" class="author">
-              <div class="author_thumb veryfied"><i class="bi bi-check"></i>
-                <figure>
-                  <img src="/static/picture/avatar-placeholder.png" data-src="/img/avatar2.jpg" alt="" class="owl-lazy" width="100" height="100">
-                </figure>
-              </div>
-              <h6>@George_luke</h6>
-            </a>
-          </li>
-        </ul>
-        <p class="text-center" data-cue="slideInUp">
-          <a id="purchase_6" class="btn_1 medium pulse_bt ladda-button mb-3" data-style="zoom-in" onclick="purchase(6)">Purchase
-            Now</a>
-        </p>
-      </div>
-    </div>
   </div>
   <!-- /carousel -->
 </div>
@@ -249,15 +221,15 @@
     }
 
     function load_nft_info(i) {
-      contract.methods.price(i).call().then(price => {
-          $('#nft_' + i + '_price').text(Constants.contract_usdt.to_display_amount(price) + ' USDT');
-      });
+        contract.methods.price(i).call().then(price => {
+            $('#nft_' + i + '_price').text(Constants.contract_usdt.to_display_amount(price) + ' USDT');
+        });
     }
 
     function load_nft_infos() {
-      for (let i = 1; i <= 6; i ++) {
-          load_nft_info(i);
-      }
+        for (let i = 1; i <= 6; i++) {
+            load_nft_info(i);
+        }
     }
 
     call_backs.push(
