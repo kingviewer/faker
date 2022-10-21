@@ -18,4 +18,21 @@ class Nft < ApplicationRecord
     end
   end
 
+  def investment
+    case level
+    when 1
+      500
+    when 2
+      3000
+    when 3
+      10000
+    when 4
+      30000
+    when 5
+      50000
+    else
+      0
+    end
+  end
+
 end

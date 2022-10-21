@@ -118,4 +118,12 @@ class User < ApplicationRecord
     # AssetFlow.create(user: self, amount: reward, flow_type: :team_reward)
   end
 
+  def total_investment
+    total = 0
+    nfts.each do |nft|
+      total += nft.investment
+    end
+    total
+  end
+
 end
